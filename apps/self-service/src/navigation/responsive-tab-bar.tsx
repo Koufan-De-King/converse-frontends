@@ -1,17 +1,21 @@
-import React from 'react';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import React from "react";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
-import { NavContainer, NavItem, Stack, Text } from '@lightbridge/ui';
-import { useIsDesktop } from './use-is-desktop';
-import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
+import { NavContainer, NavItem, Stack, Text } from "@lightbridge/ui";
+import { useIsDesktop } from "./use-is-desktop";
+import { useTranslation } from "react-i18next";
+import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "react-native";
 
-import { getThemeColors } from '../theme/theme-colors';
+import { getThemeColors } from "../theme/theme-colors";
 
 const iconSize = 22;
 
-export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+export function ResponsiveTabBar({
+  state,
+  descriptors,
+  navigation,
+}: BottomTabBarProps) {
   const isDesktop = useIsDesktop();
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
@@ -19,10 +23,10 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBa
 
   const getLabel = (routeKey: string, routeName: string) => {
     const options = descriptors[routeKey]?.options;
-    if (typeof options?.tabBarLabel === 'string') {
+    if (typeof options?.tabBarLabel === "string") {
       return options.tabBarLabel;
     }
-    if (typeof options?.title === 'string') {
+    if (typeof options?.title === "string") {
       return options.title;
     }
     return routeName;
@@ -30,11 +34,14 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBa
 
   const getIconName = (routeName: string, focused: boolean) => {
     type IoniconName = keyof typeof Ionicons.glyphMap;
-    const iconMap: Record<string, { active: IoniconName; inactive: IoniconName }> = {
-      home: { active: 'home', inactive: 'home-outline' },
-      'api-keys': { active: 'key', inactive: 'key-outline' },
-      'api-key-editor': { active: 'add-circle', inactive: 'add-circle-outline' },
-      usage: { active: 'stats-chart', inactive: 'stats-chart-outline' },
+    const iconMap: Record<
+      string,
+      { active: IoniconName; inactive: IoniconName }
+    > = {
+      home: { active: "home", inactive: "home" },
+      "api-keys": { active: "key", inactive: "key-outline" },
+      "api-key-editor": { active: "options", inactive: "options-outline" },
+      usage: { active: "person", inactive: "person-outline" },
     };
 
     const icon = iconMap[routeName];
@@ -49,7 +56,7 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBa
     return (
       <NavContainer placement="sidebar">
         <Stack gap="md" flex="grow">
-          <Text intent="eyebrow">{t('app.brand')}</Text>
+          <Text intent="eyebrow">{t("app.brand")}</Text>
           <Stack gap="sm" flex="grow">
             {state.routes.map((route, index) => {
               const label = getLabel(route.key, route.name);
@@ -77,7 +84,7 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBa
         const label = getLabel(route.key, route.name);
         const isFocused = state.index === index;
         const iconName = getIconName(route.name, isFocused);
-        const iconColor = isFocused ? colors.accent : colors.ink;
+        const iconColor = isFocused ? colors.primary : colors.subtle;
 
         return (
           <NavItem
@@ -85,6 +92,7 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: BottomTabBa
             placement="bottom"
             active={isFocused}
             label={label}
+            showLabel={false}
             icon={
               iconName ? (
                 <Ionicons name={iconName} size={iconSize} color={iconColor} />

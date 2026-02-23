@@ -7,6 +7,9 @@
     "packages/*"
   ],
   "scripts": {
+    "codegen": "pnpm --filter @lightbridge/api-rest codegen",
+    "codegen:all": "pnpm -r --if-present --filter './apps/**' --filter './packages/**' run codegen",
+    "postinstall": "pnpm codegen:all",
     "dev": "pnpm --filter self-service start",
     "android": "pnpm --filter self-service android",
     "ios": "pnpm --filter self-service ios",

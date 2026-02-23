@@ -1,16 +1,21 @@
-import { defineConfig } from '@hey-api/openapi-ts';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "@hey-api/openapi-ts";
+
+const currentFile = fileURLToPath(import.meta.url);
+const currentDir = path.dirname(currentFile);
 
 export default defineConfig({
-  input: '../../openapi/backend.yaml',
+  input: path.resolve(currentDir, "../../openapi/backend.yaml"),
   output: {
-    path: './src/client',
+    path: path.resolve(currentDir, "./src/client"),
   },
   plugins: [
-    '@hey-api/typescript',
-    '@hey-api/client-axios',
-    'zod',
+    "@hey-api/typescript",
+    "@hey-api/client-axios",
+    "zod",
     {
-      name: '@hey-api/sdk',
+      name: "@hey-api/sdk",
       validator: true,
     },
   ],
