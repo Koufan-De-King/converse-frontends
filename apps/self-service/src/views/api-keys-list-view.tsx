@@ -45,7 +45,7 @@ const formatDate = (value: string) => {
   });
 };
 
-export function ApiKeysListView({ items = MOCK_API_KEYS, onBack, onCreate, onCopy }: ApiKeysListViewProps) {
+export function ApiKeysListView({ items = MOCK_API_KEYS, onBack, onCreate, onCopy }: Readonly<ApiKeysListViewProps>) {
   const { t } = useTranslation();
   const colors = useThemeColors();
 
