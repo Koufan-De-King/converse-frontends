@@ -173,9 +173,9 @@ export function HomeView({
                 size="sm"
                 accessibilityRole="button"
                 onPress={action.onPress}
-                style={{ width: "48%" }}
+                style={{ width: "48%", minHeight: 116 }}
               >
-                <Stack gap="sm">
+                <Stack gap="sm" justify="between" style={{ flex: 1 }}>
                   <Div
                     tone={action.tone}
                     rounded="xl"

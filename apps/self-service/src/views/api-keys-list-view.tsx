@@ -58,13 +58,12 @@ export function ApiKeysListView({ items = MOCK_API_KEYS, onBack, onCreate, onCop
         <Stack direction="row" align="center" justify="between" width="full">
           <Stack direction="row" align="center" gap="sm">
             <Button
-              variant="neutral"
-              size="icon"
-              shape="circle"
+              variant="ghost"
+              size="iconSm"
               onPress={onBack}
               accessibilityLabel={t('apiKeys.back')}
             >
-              <Ionicons name="chevron-back" size={iconSize} color={colors.ink} />
+              <Ionicons name="arrow-back" size={iconSize} color={colors.ink} />
             </Button>
             <Heading tone="title">{t('apiKeys.title')}</Heading>
           </Stack>

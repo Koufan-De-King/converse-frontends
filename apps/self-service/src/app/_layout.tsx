@@ -15,14 +15,14 @@ import {
   useLocaleSync,
 } from "@lightbridge/hooks";
 import { AppFont, useAppFonts } from "@lightbridge/ui";
-import { queryClient } from "@app/queries";
+import { queryClient } from "../queries";
 import { useClientInit } from "@lightbridge/api-rest";
 import { isWebPlatform } from "@lightbridge/api-native";
 import {
   RuntimeConfigProvider,
   useRuntimeConfig,
-} from "@app/configs/runtime-config";
-import { AppSplashView } from "@app/views/app-splash-view";
+} from "../configs/runtime-config";
+import { AppSplashView } from "../views/app-splash-view";
 
 WebBrowser.maybeCompleteAuthSession();
 enableScreens();
