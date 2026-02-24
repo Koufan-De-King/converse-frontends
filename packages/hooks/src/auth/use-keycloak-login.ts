@@ -14,8 +14,60 @@ export type KeycloakConfig = {
   scheme?: string;
 };
 
+function normalizeIssuer(issuer: string) {
+  return issuer.replace(/\/+$/, '');
+}
+
+function buildKeycloakFallbackDiscovery(issuer: string): AuthSession.DiscoveryDocument {
+  const normalizedIssuer = normalizeIssuer(issuer);
+
+  return {
+    authorizationEndpoint: `${normalizedIssuer}/protocol/openid-connect/auth`,
+    tokenEndpoint: `${normalizedIssuer}/protocol/openid-connect/token`,
+    revocationEndpoint: `${normalizedIssuer}/protocol/openid-connect/revoke`,
+    userInfoEndpoint: `${normalizedIssuer}/protocol/openid-connect/userinfo`,
+    endSessionEndpoint: `${normalizedIssuer}/protocol/openid-connect/logout`,
+  };
+}
+
 export function useKeycloakLogin(config: KeycloakConfig) {
-  const discovery = AuthSession.useAutoDiscovery(config.issuer);
+  const [discovery, setDiscovery] = useState<AuthSession.DiscoveryDocument | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+    const fallback = buildKeycloakFallbackDiscovery(config.issuer);
+
+    const loadDiscovery = async () => {
+      const normalizedIssuer = normalizeIssuer(config.issuer);
+      const discoveryUrl = `${normalizedIssuer}/.well-known/openid-configuration`;
+
+      try {
+        const response = await fetch(discoveryUrl, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`Discovery request failed (${response.status})`);
+        }
+
+        const payload = (await response.json()) as AuthSession.DiscoveryDocument;
+        if (mounted) {
+          setDiscovery(payload);
+        }
+      } catch {
+        if (mounted) {
+          // Keep login flow available even when discovery fetch fails at startup.
+          setDiscovery(fallback);
+        }
+      }
+    };
+
+    void loadDiscovery();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, [config.issuer]);
+
   const redirectUri = useMemo(
     () =>
       config.redirectUri ??
