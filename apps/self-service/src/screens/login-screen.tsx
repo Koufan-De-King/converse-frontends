@@ -8,7 +8,7 @@ import { LoginView } from '../views/login-view';
 export function LoginScreen() {
   const { isAuthenticated } = useAuthSession();
   const runtimeConfig = useRuntimeConfig();
-  const { promptAsync, isLoading } = useKeycloakLogin(runtimeConfig.keycloak);
+  const { promptAsync, isLoading, isRequestReady } = useKeycloakLogin(runtimeConfig.keycloak);
   const router = useRouter();
 
   if (isAuthenticated) {
@@ -17,9 +17,15 @@ export function LoginScreen() {
 
   return (
     <LoginView
-      onSsoPress={() => promptAsync()}
+      onSsoPress={() => {
+        if (!isRequestReady) {
+          return;
+        }
+
+        void promptAsync();
+      }}
       onHelpPress={() => router.push('/help')}
-      loading={isLoading}
+      loading={isLoading || !isRequestReady}
     />
   );
 }

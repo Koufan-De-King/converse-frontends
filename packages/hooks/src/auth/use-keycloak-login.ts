@@ -92,6 +92,8 @@ export function useKeycloakLogin(config: KeycloakConfig) {
     discovery
   );
 
+  const isRequestReady = Boolean(request && discovery);
+
   useEffect(() => {
     const handleResponse = async () => {
       if (!discovery || !response || response.type !== 'success') {
@@ -165,6 +167,7 @@ export function useKeycloakLogin(config: KeycloakConfig) {
 
   return {
     request,
+    isRequestReady,
     isLoading,
     promptAsync,
   };
