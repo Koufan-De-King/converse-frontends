@@ -4,8 +4,12 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "prestart": "pnpm --dir ../.. codegen",
+    "preweb": "pnpm --dir ../.. codegen",
+    "preandroid": "pnpm --dir ../.. codegen",
+    "preios": "pnpm --dir ../.. codegen",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "start": "expo start",
     "prebuild": "expo prebuild",
     "web": "expo start --web"

@@ -1,8 +1,8 @@
-import React from 'react';
-import { useRouter } from 'expo-router';
+import React from "react";
+import { useRouter } from "expo-router";
 
-import { useAuthSession } from '@lightbridge/hooks';
-import { HomeView } from '../views/home-view';
+import { useAuthSession } from "@lightbridge/hooks";
+import { HomeView } from "../views/home-view";
 
 export function HomeScreen() {
   const { session } = useAuthSession();
@@ -14,10 +14,10 @@ export function HomeScreen() {
       usagePercent={84.2}
       usedRequests={12402}
       totalRequests={15000}
-      onNewToken={() => router.push('/api-key-editor')}
-      onEndpoints={() => router.push('/api-keys')}
-      onUsageLogs={() => router.push('/usage')}
-      onSupport={() => router.push('/help')}
+      onNewToken={() => router.navigate("/api-key-editor")}
+      onEndpoints={() => router.push("/api-keys")}
+      onUsageLogs={() => router.push("/usage")}
+      onSupport={() => router.push("/help")}
     />
   );
 }
