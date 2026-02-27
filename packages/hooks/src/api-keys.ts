@@ -1,23 +1,40 @@
 import { useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { ApiKey, CreateApiKeyInput, UpdateApiKeyInput } from '@lightbridge/api-rest';
-import { createApiKey, deleteApiKey, listApiKeys, updateApiKey } from '@lightbridge/api-rest';
+import type {
+  ApiKeyBackendApiKey,
+  ApiKeyBackendCreateApiKey,
+  ApiKeyBackendUpdateApiKey,
+} from '@lightbridge/api-rest';
+import {
+  apiKeyBackendCreateApiKey,
+  apiKeyBackendDeleteApiKey,
+  apiKeyBackendListApiKeys,
+  apiKeyBackendUpdateApiKey,
+} from '@lightbridge/api-rest';
+import { useCurrentProject } from './projects';
+import { getAuthReady } from './auth/use-auth-session';
 
-export const apiKeysQueryKey = ['api-keys'] as const;
-
-async function fetchApiKeys() {
-  const items = await listApiKeys<true>();
-  return items.data;
+export function apiKeysQueryKey(projectId: string) {
+  return ['projects', projectId, 'api-keys'] as const;
 }
 
-export function useApiKeys() {
+export function useApiKeys(projectIdOverride?: string) {
+  const { data: currentProject } = useCurrentProject(!projectIdOverride);
+  const projectId = projectIdOverride ?? currentProject?.id;
+  const authReady = getAuthReady();
+
   const query = useQuery({
-    queryKey: apiKeysQueryKey,
-    queryFn: fetchApiKeys,
+    queryKey: projectId ? apiKeysQueryKey(projectId) : ['projects', 'unknown', 'api-keys'],
+    queryFn: async () => {
+      if (!projectId) throw new Error('Project ID is required');
+      const response = await apiKeyBackendListApiKeys<true>({ path: { project_id: projectId } });
+      return response.data;
+    },
+    enabled: !!projectId && authReady,
   });
 
-  const items = useMemo<ApiKey[]>(() => query.data ?? [], [query.data]);
+  const items = useMemo<ApiKeyBackendApiKey[]>(() => query.data ?? [], [query.data]);
 
   return { ...query, data: items };
 }
@@ -26,7 +43,7 @@ export function useApiKeys() {
 export function useApiKey(id?: string | null) {
   const { data, ...query } = useApiKeys();
 
-  const item = useMemo<ApiKey | undefined>(() => {
+  const item = useMemo<ApiKeyBackendApiKey | undefined>(() => {
     if (!id) {
       return undefined;
     }
@@ -38,9 +55,18 @@ export function useApiKey(id?: string | null) {
 
 export function useCreateApiKey() {
   const queryClient = useQueryClient();
+
   const mutation = useMutation({
-    mutationFn: async (input: CreateApiKeyInput) => createApiKey<true>({ body: input }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: apiKeysQueryKey }),
+    mutationFn: async ({ input, projectId }: { input: ApiKeyBackendCreateApiKey; projectId: string }) => {
+      if (!projectId) throw new Error('Project ID is required');
+      const response = await apiKeyBackendCreateApiKey<true>({ path: { project_id: projectId }, body: input });
+      return response.data;
+    },
+    onSuccess: (_, { projectId }) => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: apiKeysQueryKey(projectId) });
+      }
+    },
   });
 
   return {
@@ -51,15 +77,20 @@ export function useCreateApiKey() {
 
 export function useUpdateApiKey() {
   const queryClient = useQueryClient();
+
   const mutation = useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: UpdateApiKeyInput }) =>
-      updateApiKey<true>({
+    mutationFn: async ({ id, projectId, input }: { id: string; projectId: string; input: ApiKeyBackendUpdateApiKey }) =>
+      apiKeyBackendUpdateApiKey<true>({
         body: input,
         path: {
-          id,
+          key_id: id,
         },
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: apiKeysQueryKey }),
+    onSuccess: (_, { projectId }) => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: apiKeysQueryKey(projectId) });
+      }
+    },
   });
 
   return {
@@ -70,9 +101,14 @@ export function useUpdateApiKey() {
 
 export function useDeleteApiKey() {
   const queryClient = useQueryClient();
+
   const mutation = useMutation({
-    mutationFn: async (id: string) => deleteApiKey({ path: { id } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: apiKeysQueryKey }),
+    mutationFn: async ({ id, projectId }: { id: string; projectId: string }) => apiKeyBackendDeleteApiKey({ path: { key_id: id } }),
+    onSuccess: (_, { projectId }) => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: apiKeysQueryKey(projectId) });
+      }
+    },
   });
 
   return {
