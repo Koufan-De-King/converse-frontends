@@ -428,7 +428,44 @@ export function McpBuilderView({
               })}
             </Stack>
 
-            <Div style={{ height: 4 }} />
+            {!generatedSecret && (
+              <Card
+                size="md"
+                style={{
+                  padding: 16,
+                  borderRadius: 14,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface,
+                }}>
+                <Stack gap="md">
+                  <Stack direction="row" align="center" gap="sm">
+                    <Div
+                      tone="brandSoft"
+                      rounded="md"
+                      size="iconMd"
+                      align="center"
+                      justify="center">
+                      <Ionicons name="key-outline" size={20} color={colors.primary} />
+                    </Div>
+                    <Stack gap="xs" style={{ flex: 1 }}>
+                      <Text intent="bodyStrong">{t('apiKeyBuilder.setupAuth.title')}</Text>
+                      <Text intent="caption">{t('apiKeyBuilder.setupAuth.description')}</Text>
+                    </Stack>
+                  </Stack>
+                  <Button
+                    variant="primary"
+                    onPress={onCreateKey}
+                    disabled={isCreating}
+                    width="full"
+                    style={{ height: 44 }}>
+                    <Text intent="inverseBodyStrong">
+                      {isCreating ? t('apiKeys.saving') : t('apiKeyBuilder.setupAuth.button')}
+                    </Text>
+                  </Button>
+                </Stack>
+              </Card>
+            )}
 
             <Text intent="eyebrow" style={{ letterSpacing: 0.3 }}>
               {t('apiKeyBuilder.sections.generated')}
@@ -521,18 +558,6 @@ export function McpBuilderView({
                   </Stack>
 
                   <Stack direction="row" align="center" gap="xs">
-                    {!generatedSecret && (
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onPress={onCreateKey}
-                        disabled={isCreating}
-                        style={{ height: 32, paddingVertical: 0 }}>
-                        <Text intent="inverseBodyStrong" style={{ fontSize: 13 }}>
-                          {isCreating ? t('apiKeys.saving') : t('apiKeys.new')}
-                        </Text>
-                      </Button>
-                    )}
 
                     <Div
                       tone="brandSoft"

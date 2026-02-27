@@ -27,16 +27,23 @@ void SplashScreen.preventAutoHideAsync();
 
 function AppBootstrap() {
   const runtimeConfig = useRuntimeConfig();
-
-  useClientInit({
-    baseURL: runtimeConfig.backendUrl,
-    auth: async (_a) => {
-      return '<token />';
-    },
-  });
-
-  const { isAuthenticated } = useAuthSession();
+  const { isAuthenticated, session } = useAuthSession();
   const { isHydrated } = useAuthHydration();
+
+  useClientInit(
+    {
+      baseURL: runtimeConfig.backendUrl,
+      auth: async (_a) => {
+        return session.tokens?.accessToken ?? '';
+      },
+    },
+    {
+      baseURL: runtimeConfig.usageUrl,
+      auth: async (_a) => {
+        return session.tokens?.accessToken ?? '';
+      },
+    }
+  );
 
   useBackendSync();
   useLocaleSync();

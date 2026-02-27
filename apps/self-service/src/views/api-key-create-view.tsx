@@ -79,6 +79,7 @@ export function ApiKeyCreateView({
                                             placeholder={t('apiKeys.placeholder')}
                                             value={name}
                                             onChangeText={setName}
+                                            selectionColor={colors.primary}
                                             autoFocus
                                         />
                                     </Stack>
@@ -126,9 +127,11 @@ export function ApiKeyCreateView({
                                                 <Ionicons
                                                     name={copiedSecret ? 'checkmark' : 'copy'}
                                                     size={18}
-                                                    color={copiedSecret ? colors.success : colors.primary}
+                                                    color={colors.primary}
                                                 />
-                                                <Text intent="link">{t('apiKeys.copy')}</Text>
+                                                <Text intent="link">
+                                                    {copiedSecret ? t('apiKeys.copied') : t('apiKeys.copy')}
+                                                </Text>
                                             </Stack>
                                         </Button>
                                     </Stack>

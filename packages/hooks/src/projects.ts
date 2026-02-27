@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import type { ApiKeyBackendProject } from '@lightbridge/api-rest';
-import { apiKeyBackendListProjects } from '@lightbridge/api-rest';
+import { apiKeyBackendCreateProject, apiKeyBackendListProjects } from '@lightbridge/api-rest';
 import { useCurrentAccount } from './accounts';
 
 export function projectsQueryKey(accountId: string) {
@@ -38,5 +39,36 @@ export function useCurrentProject() {
     ...query,
     data: current,
     isLoading: isAccountLoading || query.isLoading,
+  };
+}
+export function useEnsureDefaultProject() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  const mutation = useMutation({
+    mutationFn: async (accountId: string) => {
+      const projectsResponse = await apiKeyBackendListProjects<true>({ path: { account_id: accountId } });
+      const existing = projectsResponse.data;
+
+      if (existing && existing.length > 0) {
+        return existing[0];
+      }
+
+      const createResponse = await apiKeyBackendCreateProject<true>({
+        path: { account_id: accountId },
+        body: {
+          name: t('project.defaultName'),
+          billing_plan: 'free',
+        },
+      });
+
+      queryClient.invalidateQueries({ queryKey: projectsQueryKey(accountId) });
+      return createResponse.data;
+    },
+  });
+
+  return {
+    ...mutation,
+    mutate: mutation.mutateAsync,
   };
 }

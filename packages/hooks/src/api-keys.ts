@@ -57,14 +57,16 @@ export function useCreateApiKey() {
   const projectId = currentProject?.id;
 
   const mutation = useMutation({
-    mutationFn: async (input: ApiKeyBackendCreateApiKey) => {
-      if (!projectId) throw new Error('Project ID is required');
-      const response = await apiKeyBackendCreateApiKey<true>({ path: { project_id: projectId }, body: input });
+    mutationFn: async ({ input, projectId: projectIdOverride }: { input: ApiKeyBackendCreateApiKey; projectId?: string }) => {
+      const activeProjectId = projectIdOverride ?? projectId;
+      if (!activeProjectId) throw new Error('Project ID is required');
+      const response = await apiKeyBackendCreateApiKey<true>({ path: { project_id: activeProjectId }, body: input });
       return response.data;
     },
-    onSuccess: () => {
-      if (projectId) {
-        queryClient.invalidateQueries({ queryKey: apiKeysQueryKey(projectId) });
+    onSuccess: (_, { projectId: projectIdOverride }) => {
+      const activeProjectId = projectIdOverride ?? projectId;
+      if (activeProjectId) {
+        queryClient.invalidateQueries({ queryKey: apiKeysQueryKey(activeProjectId) });
       }
     },
   });

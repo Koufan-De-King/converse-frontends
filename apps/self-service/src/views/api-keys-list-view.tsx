@@ -122,15 +122,18 @@ export function ApiKeysListView({
                     </Stack>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      shape="circle"
                       onPress={() => handleCopy(item.id, `${item.key_prefix}...`)}
-                      accessibilityLabel={t('apiKeys.copy')}>
-                      <Ionicons
-                        name={copiedIds.has(item.id) ? 'checkmark' : 'copy'}
-                        size={listIconSize}
-                        color={copiedIds.has(item.id) ? colors.success : colors.primary}
-                      />
+                      style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                      <Stack direction="row" align="center" gap="xs">
+                        <Ionicons
+                          name={copiedIds.has(item.id) ? 'checkmark' : 'copy'}
+                          size={18}
+                          color={colors.primary}
+                        />
+                        <Text intent="link">
+                          {copiedIds.has(item.id) ? t('apiKeys.copied') : t('apiKeys.copy')}
+                        </Text>
+                      </Stack>
                     </Button>
                   </Stack>
                 </Card>

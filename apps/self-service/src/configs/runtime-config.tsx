@@ -8,16 +8,18 @@ const RuntimeConfigContext = createContext<AppRuntimeConfig | null>(null);
 
 function getEnvConfig(): AppRuntimeConfig {
   const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+  const usageUrl = process.env.EXPO_PUBLIC_USAGE_URL;
   const issuer = process.env.EXPO_PUBLIC_KEYCLOAK_ISSUER;
   const clientId = process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID;
   const scheme = process.env.EXPO_PUBLIC_KEYCLOAK_SCHEME;
 
-  if (!backendUrl || !issuer || !clientId || !scheme) {
+  if (!backendUrl || !usageUrl || !issuer || !clientId || !scheme) {
     throw new Error('Missing required EXPO_PUBLIC_* config values.');
   }
 
   return {
     backendUrl,
+    usageUrl,
     keycloak: {
       issuer,
       clientId,

@@ -10,6 +10,9 @@ const resources = {
           loading: 'Loading your workspace...',
         },
       },
+      project: {
+        defaultName: 'Default Project',
+      },
       login: {
         title: 'Login',
         welcome: 'Welcome back',
@@ -35,6 +38,7 @@ const resources = {
         createTitle: 'Create or Update',
         back: 'Go back',
         copy: 'Copy API key',
+        copied: 'Copied!',
         createdOn: 'Created on {{date}}',
         createdSuccessfully: 'Key Created Successfully',
         yourNewKey: 'Your new API key:',
@@ -46,6 +50,11 @@ const resources = {
         title: 'MCP Config Builder',
         back: 'Go back',
         studioKeyName: 'Studio Key',
+        setupAuth: {
+          title: 'Add API Authentication',
+          description: 'Generate a Studio Key to automatically inject it into your configurations.',
+          button: 'Generate & Inject Key',
+        },
         sections: {
           servers: 'Select MCP Servers',
           generated: 'Generated Configurations',
