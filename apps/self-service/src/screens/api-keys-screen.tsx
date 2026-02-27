@@ -15,6 +15,7 @@ export function ApiKeysScreen() {
       onBack={() => router.back()}
       onCreate={() => router.navigate('/api-keys/new')}
       onCopy={(value) => copyToClipboard(value)}
+      onDelete={(id, name) => router.push(`/delete-api-key?id=${id}&name=${name}`)}
     />
   );
 }

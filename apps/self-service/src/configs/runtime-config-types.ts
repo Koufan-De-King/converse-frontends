@@ -1,6 +1,8 @@
 export type AppRuntimeConfig = {
   backendUrl: string;
   usageUrl: string;
+  gatewayUrl?: string;
+  analyticsUrl?: string;
   keycloak: {
     issuer: string;
     clientId: string;

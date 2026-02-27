@@ -8,11 +8,21 @@ import { useThemeColors } from '../hooks/use-theme-colors';
 const quickActionIconSize = 20;
 const notificationIconSize = 20;
 
+export type ServiceStatus = 'healthy' | 'unhealthy' | 'unknown';
+
+export type ServiceInfo = {
+  key: string;
+  name: string;
+  version: string;
+  status: ServiceStatus;
+};
+
 type HomeViewProps = {
   userName?: string | null;
   usagePercent: number;
   usedRequests: number;
   totalRequests: number;
+  services?: ServiceInfo[];
   onNewToken: () => void;
   onEndpoints: () => void;
   onUsageLogs: () => void;
@@ -24,6 +34,7 @@ export function HomeView({
   usagePercent,
   usedRequests,
   totalRequests,
+  services: servicesProp,
   onNewToken,
   onEndpoints,
   onUsageLogs,
@@ -74,18 +85,23 @@ export function HomeView({
     },
   ];
 
-  const services = [
-    {
-      key: 'production-gateway',
-      name: t('home.services.productionGateway'),
-      version: t('home.version', { version: '2.4.1' }),
-    },
-    {
-      key: 'analytics-engine',
-      name: t('home.services.analyticsEngine'),
-      version: t('home.version', { version: '1.8.0' }),
-    },
-  ];
+  // Use provided services or fallback to defaults if none provided
+  const services = servicesProp && servicesProp.length > 0
+    ? servicesProp
+    : [
+        {
+          key: 'production-gateway',
+          name: t('home.services.productionGateway'),
+          version: t('home.version', { version: '2.4.1' }),
+          status: 'unknown' as ServiceStatus,
+        },
+        {
+          key: 'analytics-engine',
+          name: t('home.services.analyticsEngine'),
+          version: t('home.version', { version: '1.8.0' }),
+          status: 'unknown' as ServiceStatus,
+        },
+      ];
 
   return (
     <Scroll tone="muted" pad="md">
@@ -157,7 +173,11 @@ export function HomeView({
                 <Stack key={service.key} gap="sm">
                   <Stack direction="row" justify="between" align="center" width="full">
                     <Stack direction="row" align="center" gap="sm">
-                      <Div tone="success" rounded="full" size="dot" />
+                      <Div
+                        tone={service.status === 'healthy' ? 'success' : service.status === 'unhealthy' ? 'error' : 'muted'}
+                        rounded="full"
+                        size="dot"
+                      />
                       <Text intent="bodyStrong">{service.name}</Text>
                     </Stack>
                     <Text intent="caption">{service.version}</Text>

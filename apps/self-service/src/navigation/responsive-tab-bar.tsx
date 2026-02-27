@@ -48,8 +48,19 @@ export function ResponsiveTabBar({ state, descriptors, navigation }: Readonly<Bo
   if (isDesktop) {
     return (
       <NavContainer placement="sidebar">
-        <Stack gap="md" flex="grow">
-          <Text intent="eyebrow">{t('app.brand')}</Text>
+        <Stack gap="md" flex="grow" justify="between">
+          <Stack gap="sm" align="center">
+            <Text
+              intent="eyebrow"
+              align="center"
+              style={{
+                width: '100%',
+                textAlign: 'center',
+                paddingHorizontal: 8,
+              }}>
+              {t('app.brand')}
+            </Text>
+          </Stack>
           <Stack gap="sm" flex="grow">
             {state.routes.map((route, index) => {
               const label = getLabel(route.key, route.name);

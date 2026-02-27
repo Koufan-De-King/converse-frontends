@@ -12,10 +12,10 @@ type ApiKeysListViewProps = {
   onBack: () => void;
   onCreate: () => void;
   onCopy: (value: string) => void;
+  onDelete: (id: string, name: string) => void;
 };
 
 const iconSize = 22;
-const listIconSize = 20;
 
 const formatDate = (value: string) => {
   const date = new Date(value);
@@ -35,6 +35,7 @@ export function ApiKeysListView({
   onBack,
   onCreate,
   onCopy,
+  onDelete,
 }: Readonly<ApiKeysListViewProps>) {
   const { t } = useTranslation();
   const colors = useThemeColors();
@@ -65,89 +66,118 @@ export function ApiKeysListView({
   const displayItems = items;
 
   return (
-    <Scroll tone="muted" pad="md">
-      <Stack gap="lg">
+    <Div tone="muted" width="full" style={{ flex: 1 }}>
+      <Div
+        tone="surface"
+        width="full"
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+          minHeight: 58,
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          backgroundColor: colors.surface,
+        }}>
         <Stack direction="row" align="center" justify="between" width="full">
-          <Stack direction="row" align="center" gap="sm">
-            <Button
-              variant="ghost"
-              size="iconSm"
-              onPress={onBack}
-              accessibilityLabel={t('apiKeys.back')}>
-              <Ionicons name="arrow-back" size={iconSize} color={colors.ink} />
-            </Button>
-            <Heading tone="title">{t('apiKeys.title')}</Heading>
-          </Stack>
+          <Button
+            variant="ghost"
+            size="iconSm"
+            onPress={onBack}
+            accessibilityLabel={t('apiKeys.back')}>
+            <Ionicons name="arrow-back" size={iconSize} color={colors.ink} />
+          </Button>
+
+          <Heading tone="title" style={{ fontSize: 20, color: colors.ink, fontWeight: '700' }}>
+            {t('apiKeys.title')}
+          </Heading>
+
           <Button
             variant="primary"
             size="icon"
             shape="circle"
             onPress={onCreate}
-            accessibilityLabel={t('apiKeys.new')}>
+            accessibilityLabel={t('apiKeys.new')}
+            style={{ width: 36, height: 36 }}>
             <Ionicons name="add" size={iconSize} color={colors.surface} />
           </Button>
         </Stack>
+      </Div>
 
-        <Text intent="body">{t('apiKeys.subtitle')}</Text>
+      <Scroll tone="muted" pad="md" style={{ flex: 1 }}>
+        <Stack gap="lg">
+          <Text intent="body">{t('apiKeys.subtitle')}</Text>
 
-        <Stack gap="md">
-          {isLoading && (
-            <Card size="md">
-              <Stack align="center" justify="center">
-                <Text intent="caption">{t('apiKeys.loading')}</Text>
-              </Stack>
-            </Card>
-          )}
+          <Stack gap="md">
+            {isLoading && (
+              <Card size="md">
+                <Stack align="center" justify="center">
+                  <Text intent="caption">{t('apiKeys.loading')}</Text>
+                </Stack>
+              </Card>
+            )}
 
-          {!isLoading && displayItems.length === 0 && (
-            <Card size="md">
-              <Stack align="center" justify="center">
-                <Text intent="caption">{t('apiKeys.emptyState')}</Text>
-              </Stack>
-            </Card>
-          )}
+            {!isLoading && displayItems.length === 0 && (
+              <Card size="md">
+                <Stack align="center" justify="center">
+                  <Text intent="caption">{t('apiKeys.emptyState')}</Text>
+                </Stack>
+              </Card>
+            )}
 
-          {!isLoading &&
-            displayItems.map((item) => {
-              const createdLabel = t('apiKeys.createdOn', {
-                date: formatDate(item.created_at),
-              });
+            {!isLoading &&
+              displayItems.map((item) => {
+                const createdLabel = t('apiKeys.createdOn', {
+                  date: formatDate(item.created_at),
+                });
 
-              return (
-                <Card key={item.id} size="md">
-                  <Stack direction="row" align="center" justify="between" width="full">
-                    <Stack gap="xs">
-                      <Text intent="bodyStrong">{item.key_prefix}...</Text>
-                      <Text intent="caption">{createdLabel}</Text>
-                    </Stack>
-                    <Button
-                      variant="ghost"
-                      onPress={() => handleCopy(item.id, `${item.key_prefix}...`)}
-                      style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-                      <Stack direction="row" align="center" gap="xs">
-                        <Ionicons
-                          name={copiedIds.has(item.id) ? 'checkmark' : 'copy'}
-                          size={18}
-                          color={colors.primary}
-                        />
-                        <Text intent="link">
-                          {copiedIds.has(item.id) ? t('apiKeys.copied') : t('apiKeys.copy')}
-                        </Text>
+                return (
+                  <Card key={item.id} size="md">
+                    <Stack direction="row" align="center" justify="between" width="full">
+                      <Stack gap="xs">
+                        <Text intent="bodyStrong">{item.key_prefix}...</Text>
+                        <Text intent="caption">{createdLabel}</Text>
                       </Stack>
-                    </Button>
-                  </Stack>
-                </Card>
-              );
-            })}
-        </Stack>
-
-        <Div tone="warningSoft" rounded="xl" pad="md" width="full">
-          <Stack direction="row" gap="sm" align="start">
-            <Ionicons name="shield-checkmark" size={20} color={colors.secondary} />
-            <Text intent="warning">{t('apiKeys.securityNote')}</Text>
+                      <Stack direction="row" align="center" gap="sm">
+                        <Button
+                          variant="ghost"
+                          onPress={() => handleCopy(item.id, `${item.key_prefix}...`)}
+                          style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                          <Stack direction="row" align="center" gap="xs">
+                            <Ionicons
+                              name={copiedIds.has(item.id) ? 'checkmark' : 'copy'}
+                              size={18}
+                              color={colors.primary}
+                            />
+                            <Text intent="link">
+                              {copiedIds.has(item.id) ? t('apiKeys.copied') : t('apiKeys.copy')}
+                            </Text>
+                          </Stack>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onPress={() => onDelete(item.id, item.key_prefix)}
+                          style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                          <Ionicons
+                            name="trash-outline"
+                            size={18}
+                            color={colors.error}
+                          />
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                );
+              })}
           </Stack>
-        </Div>
-      </Stack>
-    </Scroll>
+
+          <Div tone="warningSoft" rounded="xl" pad="md" width="full">
+            <Stack direction="row" gap="sm" align="start">
+              <Ionicons name="shield-checkmark" size={20} color={colors.secondary} />
+              <Text intent="warning">{t('apiKeys.securityNote')}</Text>
+            </Stack>
+          </Div>
+        </Stack>
+      </Scroll>
+    </Div>
   );
 }
