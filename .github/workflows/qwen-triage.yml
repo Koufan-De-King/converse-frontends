@@ -66,7 +66,7 @@ jobs:
           ISSUE_BODY: '${{ github.event.issue.body }}'
           AVAILABLE_LABELS: '${{ steps.get_labels.outputs.available_labels }}'
         with:
-          openai_api_key: '${{ secrets.QWEN_API_KEY }}'
+          openai_api_key: '${{ secrets.OPENAI_API_KEY }}'
           openai_base_url: '${{ vars.QWEN_BASE_URL }}'
           openai_model: '${{ vars.QWEN_MODEL }}'
           qwen_cli_version: '${{ vars.QWEN_CLI_VERSION }}'
