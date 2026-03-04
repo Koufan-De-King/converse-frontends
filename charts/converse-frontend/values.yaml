@@ -84,26 +84,3 @@ conversefrontend:
           enabled: true
           port: 80
           targetPort: http
-
-  ingress:
-    frontend:
-     
-      enabled: false
-      annotations: {}
-      className: ""
-      hosts: []
-      tls: []
-
-
-
-  persistence:
-    runtime-config-template:
-      enabled: false
-      type: configMap
-      identifier: runtime-config-template
-      advancedMounts:
-        main:
-          frontend:
-            - path: /usr/share/nginx/html/config.template.json
-              subPath: config.template.json
-              readOnly: true
