@@ -26,11 +26,7 @@ conversefrontend:
               protocol: TCP
 
           env:
-
-
             EXPO_PUBLIC_BACKEND_URL: ""
-
-            # Optional runtime config (supported by newer UI builds)
             EXPO_PUBLIC_USAGE_URL: ""
             EXPO_PUBLIC_GATEWAY_URL: ""
             EXPO_PUBLIC_ANALYTICS_URL: ""
