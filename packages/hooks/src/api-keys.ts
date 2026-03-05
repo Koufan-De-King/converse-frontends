@@ -28,7 +28,9 @@ export function useApiKeys(projectIdOverride?: string) {
     queryKey: projectId ? apiKeysQueryKey(projectId) : ['projects', 'unknown', 'api-keys'],
     queryFn: async () => {
       if (!projectId) throw new Error('Project ID is required');
-      const response = await apiKeyBackendListApiKeys<true>({ path: { project_id: projectId } });
+      const response = await apiKeyBackendListApiKeys<true>({
+        path: { project_id: projectId, limit: 100, offset: 0 },
+      });
       return response.data;
     },
     enabled: !!projectId && authReady,

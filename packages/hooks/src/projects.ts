@@ -17,7 +17,9 @@ export function useProjects(accountId?: string) {
     queryKey: accountId ? projectsQueryKey(accountId) : ['projects', 'unknown'],
     queryFn: async () => {
       if (!accountId) throw new Error('Account ID is required');
-      const response = await apiKeyBackendListProjects<true>({ path: { account_id: accountId } });
+      const response = await apiKeyBackendListProjects<true>({
+        path: { account_id: accountId, limit: 100, offset: 0 },
+      });
       return response.data;
     },
     enabled: !!accountId && authReady,
@@ -53,7 +55,7 @@ export function useEnsureDefaultProject() {
   const mutation = useMutation({
     mutationFn: async (accountId: string) => {
       const projectsResponse = await apiKeyBackendListProjects<true>({
-        path: { account_id: accountId },
+        path: { account_id: accountId, limit: 100, offset: 0 },
       });
       const existing = projectsResponse.data;
 

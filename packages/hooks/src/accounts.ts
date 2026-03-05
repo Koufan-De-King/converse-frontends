@@ -12,7 +12,9 @@ export function useAccounts(enabled = true) {
   const query = useQuery({
     queryKey: accountsQueryKey,
     queryFn: async () => {
-      const response = await apiKeyBackendListAccounts<true>();
+      const response = await apiKeyBackendListAccounts<true>({
+        path: { limit: 100, offset: 0 },
+      });
       return response.data;
     },
     enabled: enabled && authReady,
@@ -40,7 +42,9 @@ export function useEnsureDefaultAccount() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const accountsResponse = await apiKeyBackendListAccounts<true>();
+      const accountsResponse = await apiKeyBackendListAccounts<true>({
+        path: { limit: 100, offset: 0 },
+      });
       const existing = accountsResponse.data;
 
       if (existing && existing.length > 0) {
@@ -57,7 +61,6 @@ export function useEnsureDefaultAccount() {
       const createResponse = await apiKeyBackendCreateAccount<true>({
         body: {
           billing_identity: billingIdentity,
-          owners_admins: [ownerAdmin],
         },
       });
 
