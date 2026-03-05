@@ -12,6 +12,11 @@ type ApiKeysListViewProps = {
   onBack: () => void;
   onCreate: () => void;
   onDelete: (id: string, name: string) => void;
+  onNext: () => void;
+  onPrev: () => void;
+  hasMore: boolean;
+  canPrev: boolean;
+  page: number;
 };
 
 const iconSize = 22;
@@ -34,6 +39,11 @@ export function ApiKeysListView({
   onBack,
   onCreate,
   onDelete,
+  onNext,
+  onPrev,
+  hasMore,
+  canPrev,
+  page,
 }: Readonly<ApiKeysListViewProps>) {
   const { t } = useTranslation();
   const colors = useMemo(() => getThemeColors('light'), []);
@@ -136,6 +146,47 @@ export function ApiKeysListView({
           </Div>
         </Stack>
       </Scroll>
+
+      <Div
+        tone="surface"
+        width="full"
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          backgroundColor: colors.surface,
+        }}>
+        <Stack direction="row" align="center" justify="between" width="full">
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={onPrev}
+            disabled={!canPrev}
+            style={{ opacity: canPrev ? 1 : 0.5 }}>
+            <Stack direction="row" align="center" gap="xs">
+              <Ionicons name="chevron-back" size={16} color={colors.ink} />
+              <Text intent="bodyStrong">{t('common.previous', { defaultValue: 'Previous' })}</Text>
+            </Stack>
+          </Button>
+
+          <Text intent="caption" style={{ fontWeight: '600' }}>
+            {t('common.page', { defaultValue: 'Page' })} {page}
+          </Text>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={onNext}
+            disabled={!hasMore}
+            style={{ opacity: hasMore ? 1 : 0.5 }}>
+            <Stack direction="row" align="center" gap="xs">
+              <Text intent="bodyStrong">{t('common.next', { defaultValue: 'Next' })}</Text>
+              <Ionicons name="chevron-forward" size={16} color={colors.ink} />
+            </Stack>
+          </Button>
+        </Stack>
+      </Div>
     </Div>
   );
 }

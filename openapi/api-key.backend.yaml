@@ -17,14 +17,14 @@ paths:
       operationId: list_accounts
       parameters:
       - name: offset
-        in: path
+        in: query
         required: true
         schema:
           type: integer
           format: int32
           minimum: 0
       - name: limit
-        in: path
+        in: query
         required: true
         schema:
           type: integer
@@ -126,14 +126,14 @@ paths:
         schema:
           type: string
       - name: offset
-        in: path
+        in: query
         required: true
         schema:
           type: integer
           format: int32
           minimum: 0
       - name: limit
-        in: path
+        in: query
         required: true
         schema:
           type: integer
@@ -343,14 +343,14 @@ paths:
         schema:
           type: string
       - name: offset
-        in: path
+        in: query
         required: true
         schema:
           type: integer
           format: int32
           minimum: 0
       - name: limit
-        in: path
+        in: query
         required: true
         schema:
           type: integer
