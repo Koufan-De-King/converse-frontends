@@ -9,6 +9,8 @@ The UI validates this payload and will fail to load if required fields are missi
 
 Provide the following values at install/upgrade time.
 
+This chart ships a values schema (see [`values.schema.json`](./values.schema.json)) and Helm will validate required values during lint/install/upgrade.
+
 ### Option A: values file
 
 Create `my-values.yaml`:
@@ -28,6 +30,10 @@ conversefrontend:
             EXPO_PUBLIC_KEYCLOAK_ISSUER: "https://keycloak.example.com/realms/your-realm"
             EXPO_PUBLIC_KEYCLOAK_CLIENT_ID: "converse-ui"
             EXPO_PUBLIC_KEYCLOAK_SCHEME: "https"
+
+> Note: for local/testing you can bypass auth validation by setting
+> `EXPO_PUBLIC_KEYCLOAK_CLIENT_ID: "disabled"`. In this mode, `EXPO_PUBLIC_KEYCLOAK_ISSUER` and
+> `EXPO_PUBLIC_KEYCLOAK_SCHEME` are not required, but `EXPO_PUBLIC_BACKEND_URL` remains required.
 ```
 
 Install/upgrade:
@@ -44,4 +50,3 @@ Install/upgrade:
   --set conversefrontend.controllers.main.containers.frontend.env.EXPO_PUBLIC_KEYCLOAK_ISSUER=https://keycloak.example.com/realms/your-realm \
   --set conversefrontend.controllers.main.containers.frontend.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID=converse-ui \
   --set conversefrontend.controllers.main.containers.frontend.env.EXPO_PUBLIC_KEYCLOAK_SCHEME=https`
-
