@@ -13,7 +13,7 @@ let latestApiOptions: ClientInitOptions;
 let latestUsageOptions: ClientInitOptions;
 let refreshPromise: Promise<boolean> | null = null;
 
-const TOKEN_REFRESH_BUFFER_MS = 60 * 1000; // Refresh if token expires within 60 seconds
+const TOKEN_REFRESH_BUFFER_MS = 60 * 1000;
 
 async function tryProactiveRefresh(targetConfig: ClientInitOptions): Promise<void> {
   if (!targetConfig.refreshAuth || !targetConfig.getExpiresAt) {
@@ -30,12 +30,7 @@ async function tryProactiveRefresh(targetConfig: ClientInitOptions): Promise<voi
     if (refreshPromise === null) {
       refreshPromise = targetConfig.refreshAuth();
       try {
-        const success = await refreshPromise;
-        if (!success) {
-          console.log('[API Client] Proactive token refresh failed');
-        }
-      } catch (err) {
-        console.log('[API Client] Proactive token refresh error:', err);
+        await refreshPromise;
       } finally {
         refreshPromise = null;
       }
@@ -45,7 +40,6 @@ async function tryProactiveRefresh(targetConfig: ClientInitOptions): Promise<voi
   }
 }
 
-// Helper to determine if request is for usage API
 function isUsageRequest(url: string | undefined): boolean {
   if (!url) return false;
   return (
@@ -56,22 +50,7 @@ function isUsageRequest(url: string | undefined): boolean {
   );
 }
 
-// Helper for debugging
-async function debugAuth(method: string, url: string, targetConfig: ClientInitOptions) {
-  if (__DEV__) {
-    const authValue = await (typeof targetConfig.auth === 'function'
-      ? targetConfig.auth({ type: 'http' } as any)
-      : targetConfig.auth);
-    console.log(`[API Client] ${method.toUpperCase()} ${url} -> ${targetConfig.baseURL}${url}`);
-    console.log(`[API Client] Auth Token: ${authValue ? 'Present' : 'Missing'}`);
-    if (!authValue) {
-      console.log(`[API Client] Warning: No auth token available for request`);
-    }
-  }
-}
-
 export function useClientInit(apiOptions: ClientInitOptions, usageOptions: ClientInitOptions) {
-  // Update options on every render to get fresh auth tokens
   latestApiOptions = apiOptions;
   latestUsageOptions = usageOptions;
 
@@ -92,10 +71,7 @@ export function useClientInit(apiOptions: ClientInitOptions, usageOptions: Clien
       const original = (client as any)[method].bind(client);
 
       (client as any)[method] = async (options: any) => {
-        let actualOptions = options;
-        if (typeof options === 'string') {
-          /* empty */
-        }
+        const actualOptions = options;
 
         const isUsage = isUsageRequest(actualOptions.url);
         const targetConfig = isUsage ? latestUsageOptions : latestApiOptions;
@@ -104,7 +80,6 @@ export function useClientInit(apiOptions: ClientInitOptions, usageOptions: Clien
         const security = actualOptions.security ?? [{ type: 'http', scheme: 'bearer' }];
 
         await tryProactiveRefresh(targetConfig);
-        await debugAuth(method, actualOptions.url, targetConfig);
 
         try {
           return await original({
@@ -115,25 +90,20 @@ export function useClientInit(apiOptions: ClientInitOptions, usageOptions: Clien
           });
         } catch (error: any) {
           if (error?.status === 401 || error?.response?.status === 401) {
-            console.log('[API Client] 401 Unauthorized - Token may be expired');
-
             if (refreshPromise === null && targetConfig.refreshAuth) {
               refreshPromise = targetConfig.refreshAuth();
               try {
                 const success = await refreshPromise;
                 if (!success) {
-                  console.log('[API Client] Token refresh failed, re-throwing 401');
                   throw error;
                 }
-                // Token refreshed, retry the request
                 return await original({
                   ...actualOptions,
                   security,
                   baseURL: baseUrl,
                   auth: targetConfig.auth,
                 });
-              } catch (refreshError) {
-                console.log('[API Client] Token refresh error:', refreshError);
+              } catch {
                 throw error;
               } finally {
                 refreshPromise = null;
@@ -156,7 +126,6 @@ export function useClientInit(apiOptions: ClientInitOptions, usageOptions: Clien
     isInitialized = true;
   }
 
-  // Call setConfig on each render to ensure latest options are used
   client.setConfig({
     ...(apiOptions as unknown as ClientOptions),
     auth: apiOptions.auth,
