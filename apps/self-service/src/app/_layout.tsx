@@ -14,6 +14,7 @@ import {
   useBackendSync,
   useLocaleSync,
   refreshAccessToken,
+  clearPersistedAuthSession,
 } from '@lightbridge/hooks';
 import { AppFont, useAppFonts } from '@lightbridge/ui';
 import { queryClient } from '../queries';
@@ -21,7 +22,6 @@ import { useClientInit } from '@lightbridge/api-rest';
 import { isWebPlatform } from '@lightbridge/api-native';
 import { RuntimeConfigProvider, useRuntimeConfig } from '../configs/runtime-config';
 import { AppSplashView } from '../views/app-splash-view';
-import { clearPersistedAuthSession } from '../../../../packages/hooks/src/auth/use-auth-session';
 
 WebBrowser.maybeCompleteAuthSession();
 enableScreens();
@@ -110,7 +110,7 @@ function AppBootstrap() {
     }
 
     if (isTokenExpired && isAuthenticated && !inAuthGroup) {
-      void clearPersistedAuthSession();
+      clearPersistedAuthSession();
       router.replace('/login');
     }
   }, [
