@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
   useAuthSession,
   useSignOut,
-  useTokenUsage,
   useCurrentProject,
   useQueryUsage,
 } from '@lightbridge/hooks';
@@ -38,10 +37,45 @@ export function HomeScreen() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const isSigningOutRef = useRef(false);
   const isMountedRef = useRef(true);
-  const { data: usage = [] } = useTokenUsage();
   const { data: project } = useCurrentProject();
   const config = useRuntimeConfig();
-  useQueryUsage();
+
+  const [dayStamp, setDayStamp] = useState(() => {
+    const now = new Date();
+    return now.getFullYear() * 10_000 + (now.getMonth() + 1) * 100 + now.getDate();
+  });
+
+  useEffect(() => {
+    // Keep the “start of today” computation in sync if the app stays open past midnight.
+    const interval = setInterval(() => {
+      const now = new Date();
+      const nextStamp =
+        now.getFullYear() * 10_000 + (now.getMonth() + 1) * 100 + now.getDate();
+
+      setDayStamp((prev) => (prev === nextStamp ? prev : nextStamp));
+    }, 60_000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const startOfToday = useMemo(() => {
+    const year = Math.floor(dayStamp / 10_000);
+    const month = Math.floor((dayStamp % 10_000) / 100); // 1-12
+    const day = dayStamp % 100;
+
+    return new Date(year, month - 1, day);
+  }, [dayStamp]);
+
+  const usageQueryParams = useMemo(
+    () => ({
+      startTime: startOfToday,
+      bucket: '1 day' as const,
+    }),
+    [startOfToday]
+  );
+
+  const { data: usageResponse } = useQueryUsage(usageQueryParams);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -107,7 +141,8 @@ export function HomeScreen() {
   });
 
   const { usedRequests, totalRequests, usagePercent } = useMemo(() => {
-    const used = usage.reduce((acc, item) => acc + (item.requests || 0), 0);
+    const points = usageResponse?.points ?? [];
+    const used = points.reduce((acc, item) => acc + (item.requests ?? 0), 0);
     const total = project?.default_limits?.requests_per_day || 1000;
     const percent = total > 0 ? (used / total) * 100 : 0;
 
@@ -116,7 +151,7 @@ export function HomeScreen() {
       totalRequests: total,
       usagePercent: percent,
     };
-  }, [usage, project]);
+  }, [usageResponse, project]);
 
   return (
     <HomeView
