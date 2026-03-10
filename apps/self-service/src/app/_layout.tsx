@@ -13,6 +13,8 @@ import {
   useAuthSession,
   useBackendSync,
   useLocaleSync,
+  refreshAccessToken,
+  clearPersistedAuthSession,
 } from '@lightbridge/hooks';
 import { AppFont, useAppFonts } from '@lightbridge/ui';
 import { queryClient } from '../queries';
@@ -27,29 +29,46 @@ void SplashScreen.preventAutoHideAsync();
 
 function AppBootstrap() {
   const runtimeConfig = useRuntimeConfig();
-  const { isAuthenticated, session } = useAuthSession();
+  const { isAuthenticated, session, isTokenExpired } = useAuthSession();
   const { isHydrated } = useAuthHydration();
+
+  const handleRefreshAuth = async () => {
+    const refreshToken = session.tokens?.refreshToken;
+    if (!refreshToken) {
+      return false;
+    }
+    const result = await refreshAccessToken(
+      {
+        issuer: runtimeConfig.keycloak.issuer,
+        clientId: runtimeConfig.keycloak.clientId,
+      },
+      refreshToken
+    );
+    return result !== null;
+  };
 
   useClientInit(
     {
       baseURL: runtimeConfig.backendUrl,
       auth: async (_a) => {
-        // Wait for auth to be hydrated before returning token
         if (!isHydrated) {
           return '';
         }
         return session.tokens?.accessToken ?? '';
       },
+      refreshAuth: handleRefreshAuth,
+      getExpiresAt: () => session.tokens?.expiresAt,
     },
     {
       baseURL: runtimeConfig.usageUrl || runtimeConfig.backendUrl,
       auth: async (_a) => {
-        // Wait for auth to be hydrated before returning token
         if (!isHydrated) {
           return '';
         }
         return session.tokens?.accessToken ?? '';
       },
+      refreshAuth: handleRefreshAuth,
+      getExpiresAt: () => session.tokens?.expiresAt,
     }
   );
 
@@ -73,16 +92,36 @@ function AppBootstrap() {
       first === 'login';
     const inHelpRoute =
       pathname === '/help' || pathname?.startsWith('/help/') || segments.includes('help');
+    const inApiKeysRoute =
+      pathname === '/api-keys/new' ||
+      pathname?.startsWith('/api-keys/') ||
+      pathname === '/delete-api-key' ||
+      pathname?.startsWith('/delete-api-key');
+    const inTabsGroup = segments.includes('(tabs)');
 
     if (!isAuthenticated && !inAuthGroup && !inHelpRoute) {
       router.replace('/login');
       return;
     }
 
-    if (isAuthenticated && inAuthGroup) {
+    if (isAuthenticated && !inTabsGroup && !inHelpRoute && !inApiKeysRoute) {
       router.replace('/home');
+      return;
     }
-  }, [isAuthenticated, isHydrated, pathname, router, segments]);
+
+    if (isTokenExpired && isAuthenticated && !inAuthGroup) {
+      clearPersistedAuthSession();
+      router.replace('/login');
+    }
+  }, [
+    isAuthenticated,
+    isHydrated,
+    pathname,
+    router,
+    segments,
+    isTokenExpired,
+    session.tokens?.expiresAt,
+  ]);
 
   return (
     <>
