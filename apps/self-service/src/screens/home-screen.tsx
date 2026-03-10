@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import {
   useAuthSession,
+  useSignOut,
   useTokenUsage,
   useCurrentProject,
   useQueryUsage,
@@ -33,11 +34,45 @@ async function checkServiceHealth(url: string): Promise<ServiceStatus> {
 
 export function HomeScreen() {
   const { session } = useAuthSession();
+  const { signOut } = useSignOut();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const isSigningOutRef = useRef(false);
+  const isMountedRef = useRef(true);
   const { data: usage = [] } = useTokenUsage();
   const { data: project } = useCurrentProject();
   const config = useRuntimeConfig();
   useQueryUsage();
   const router = useRouter();
+
+  useEffect(() => {
+    // React 18 StrictMode (dev) mounts/unmounts effects twice.
+    // Ensure we re-mark as mounted on the second pass.
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const onLogout = useCallback(() => {
+    // Guard against rapid double taps; refs update synchronously.
+    if (isSigningOutRef.current) return;
+
+    isSigningOutRef.current = true;
+    setIsSigningOut(true);
+
+    void (async () => {
+      try {
+        await signOut();
+      } catch (error) {
+        console.error('Sign out failed', error);
+      } finally {
+        isSigningOutRef.current = false;
+        if (isMountedRef.current) {
+          setIsSigningOut(false);
+        }
+      }
+    })();
+  }, [signOut]);
 
   const { data: services = [] } = useQuery({
     queryKey: ['service-health'],
@@ -94,6 +129,8 @@ export function HomeScreen() {
       onEndpoints={() => router.push('/api-keys')}
       onUsageLogs={() => router.push('/usage')}
       onSupport={() => router.push('/help')}
+      isSigningOut={isSigningOut}
+      onLogout={onLogout}
     />
   );
 }
