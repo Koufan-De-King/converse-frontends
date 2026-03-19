@@ -1,6 +1,18 @@
 # Static analysis summary
 
-## Changed files (0)
+## Changed files (12)
+- .opencode/analysis.txt
+- .opencode/changed-files.txt
+- .opencode/eslint-raw.json
+- .opencode/review-rules.md
+- .opencode/semgrep-raw.json
+- .opencode/tsc-raw.txt
+- charts/converse-frontend/README.md
+- charts/converse-frontend/values.schema.json
+- opencode.json
+- opencode_code_review_mcp_prd.md
+- package.json
+- packages/hooks/src/usage.ts
 
 ## High severity
 - No high severity findings
@@ -23,9 +35,13 @@
 - No low severity findings
 
 ## Tests and quality gates
-- ESLint: passed (0 error(s), 26 warning(s))
+- ESLint: passed (0 error(s), 25 warning(s))
 - TypeScript: completed (0
 0 error(s))
 - Semgrep: passed (0 high, 2 medium, 0 low)
 
 ## Suggested focus areas
+- .
+- .opencode
+- charts/converse-frontend
+- packages/hooks/src

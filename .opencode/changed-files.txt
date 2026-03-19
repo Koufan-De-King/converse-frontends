@@ -1,0 +1,12 @@
+.opencode/analysis.txt
+.opencode/changed-files.txt
+.opencode/eslint-raw.json
+.opencode/review-rules.md
+.opencode/semgrep-raw.json
+.opencode/tsc-raw.txt
+charts/converse-frontend/README.md
+charts/converse-frontend/values.schema.json
+opencode.json
+opencode_code_review_mcp_prd.md
+package.json
+packages/hooks/src/usage.ts
