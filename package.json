@@ -6,6 +6,12 @@
     "apps/*",
     "packages/*"
   ],
+
+
+
+
+
+  
   "scripts": {
     "codegen": "pnpm --filter @lightbridge/api-rest codegen",
     "codegen:all": "pnpm -r --if-present --filter './apps/**' --filter './packages/**' run codegen",
