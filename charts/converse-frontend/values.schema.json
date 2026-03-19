@@ -50,26 +50,17 @@
                             "EXPO_PUBLIC_USAGE_URL": {
                               "type": "string",
                               "default": "",
-                              "anyOf": [
-                                { "const": "" },
-                                { "type": "string", "format": "uri" }
-                              ]
+                              "anyOf": [{ "const": "" }, { "type": "string", "format": "uri" }]
                             },
                             "EXPO_PUBLIC_GATEWAY_URL": {
                               "type": "string",
                               "default": "",
-                              "anyOf": [
-                                { "const": "" },
-                                { "type": "string", "format": "uri" }
-                              ]
+                              "anyOf": [{ "const": "" }, { "type": "string", "format": "uri" }]
                             },
                             "EXPO_PUBLIC_ANALYTICS_URL": {
                               "type": "string",
                               "default": "",
-                              "anyOf": [
-                                { "const": "" },
-                                { "type": "string", "format": "uri" }
-                              ]
+                              "anyOf": [{ "const": "" }, { "type": "string", "format": "uri" }]
                             },
                             "EXPO_PUBLIC_KEYCLOAK_ISSUER": {
                               "type": "string",

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "lightbridge": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LightBridge Server",
+      "options": {
+        "baseURL": "{env:LIGHTBRIDGE_BASE_URL}",
+        "headers": {
+          "Authorization": "Bearer {env:LIGHTBRIDGE_API_KEY}"
+        }
+      },
+      "models": {
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash"
+        },
+        "glm-5": {
+          "name": "GLM-5"
+        }
+      }
+    }
+  },
+  "mode": {
+    "review": {
+      "prompt": "{file:.opencode/review-rules.md}",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": true,
+        "read": true,
+        "grep": true,
+        "glob": true
+      }
+    }
+  },
+  "mcp": {
+    "code_search": {
+      "type": "local",
+      "command": [
+        "node",
+        "/opt/hostedtoolcache/node/22.22.1/x64/lib/node_modules/@iflow-mcp/qdrant-mcp-server/build/index.js"
+      ],
+      "enabled": true,
+      "environment": {
+        "QDRANT_URL": "http://localhost:6333",
+        "EMBEDDING_PROVIDER": "openai",
+        "OPENAI_API_KEY": "lbk_secret_uJI9FUAqcsxo3f20VNW9q40AwUMHwsMEjHT-CRCllNI",
+        "EMBEDDING_BASE_URL": "https://api.ai.camer.digital/v1/",
+        "EMBEDDING_MODEL": "text-embedding-3-small",
+        "CODE_ENABLE_AST": "true",
+        "CODE_CHUNK_SIZE": "2500"
+      }
+    }
+  }
+}
