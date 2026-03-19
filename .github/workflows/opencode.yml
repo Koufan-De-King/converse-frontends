@@ -97,10 +97,13 @@ jobs:
       # ── Stage 3: Semantic Indexing + MCP ──────────────────────────────────
       - name: Install MCP server
         id: mcp-install
+        env:
+          CXXFLAGS: "-std=c++20"
         run: |
-          npm install -g @iflow-mcp/qdrant-mcp-server
-          MCP_PATH=$(npm root -g)/@iflow-mcp/qdrant-mcp-server/build/index.js
-          echo "mcp_path=$MCP_PATH" >> "$GITHUB_OUTPUT"
+          npm install -g @iflow-mcp/qdrant-mcp-server --legacy-peer-deps --quiet
+          echo "mcp_path=$(which qdrant-mcp-server)" >> "$GITHUB_OUTPUT"
+          echo "mcp_available=true" >> "$GITHUB_OUTPUT"
+          qdrant-mcp-server --version || echo "MCP server installed but version check failed"
         continue-on-error: true
 
       - name: Verify Qdrant connectivity
