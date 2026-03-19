@@ -1,0 +1,47 @@
+# Static analysis summary
+
+## Changed files (12)
+- .opencode/analysis.txt
+- .opencode/changed-files.txt
+- .opencode/eslint-raw.json
+- .opencode/review-rules.md
+- .opencode/semgrep-raw.json
+- .opencode/tsc-raw.txt
+- charts/converse-frontend/README.md
+- charts/converse-frontend/values.schema.json
+- opencode.json
+- opencode_code_review_mcp_prd.md
+- package.json
+- packages/hooks/src/usage.ts
+
+## High severity
+- No high severity findings
+
+## Medium severity
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/client/client.gen.ts:20 [ESLint] unknown: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars').
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/client/client.gen.ts:73 [ESLint] unknown: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars').
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/client/types.gen.ts:80 [ESLint] @typescript-eslint/array-type: Array type using 'ReadonlyArray<Auth>' is forbidden. Use 'readonly Auth[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/client/utils.gen.ts:168 [ESLint] @typescript-eslint/array-type: Array type using 'Array<T>' is forbidden. Use 'T[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/bodySerializer.gen.ts:42 [ESLint] @typescript-eslint/array-type: Array type using 'Array<T>' is forbidden. Use 'T[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/bodySerializer.gen.ts:68 [ESLint] @typescript-eslint/array-type: Array type using 'Array<T>' is forbidden. Use 'T[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/params.gen.ts:40 [ESLint] @typescript-eslint/array-type: Array type using 'ReadonlyArray<Field>' is forbidden. Use 'readonly Field[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/params.gen.ts:43 [ESLint] @typescript-eslint/array-type: Array type using 'ReadonlyArray<T>' is forbidden. Use 'readonly T[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/params.gen.ts:105 [ESLint] @typescript-eslint/array-type: Array type using 'ReadonlyArray<unknown>' is forbidden. Use 'readonly unknown[]' instead.
+- /home/runner/work/converse-frontends/converse-frontends/packages/api-rest/src/client/core/serverSentEvents.gen.ts:166 [ESLint] @typescript-eslint/array-type: Array type using 'Array<string>' is forbidden. Use 'string[]' instead.
+- /src/.docker/nginx/default.conf:9 [Semgrep] generic.nginx.security.header-redefinition.header-redefinition: The 'add_header' directive is called in a 'location' block after headers have been set at the server block. Calling 'add_header' in the location block will actually overwrite the headers defined in the server block, no matter which headers are set. To fix this, explicitly set all headers or set all headers in the server block.
+- /src/.docker/nginx/default.conf:14 [Semgrep] generic.nginx.security.header-redefinition.header-redefinition: The 'add_header' directive is called in a 'location' block after headers have been set at the server block. Calling 'add_header' in the location block will actually overwrite the headers defined in the server block, no matter which headers are set. To fix this, explicitly set all headers or set all headers in the server block.
+
+## Low severity
+- No low severity findings
+
+## Tests and quality gates
+- ESLint: passed (0 error(s), 25 warning(s))
+- TypeScript: completed (0
+0 error(s))
+- Semgrep: passed (0 high, 2 medium, 0 low)
+
+## Suggested focus areas
+- .
+- .opencode
+- charts/converse-frontend
+- packages/hooks/src

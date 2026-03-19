@@ -1,0 +1,55 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "lightbridge": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LightBridge Server",
+      "options": {
+        "baseURL": "{env:LIGHTBRIDGE_BASE_URL}",
+        "headers": {
+          "Authorization": "Bearer {env:LIGHTBRIDGE_API_KEY}"
+        }
+      },
+      "models": {
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash"
+        },
+        "glm-5": {
+          "name": "GLM-5"
+        }
+      }
+    }
+  },
+  "mode": {
+    "review": {
+      "prompt": "{file:.opencode/review-rules.md}",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": true,
+        "read": true,
+        "grep": true,
+        "glob": true
+      }
+    }
+  },
+  "mcp": {
+    "code_search": {
+      "type": "local",
+      "command": [
+        "node",
+        "/opt/hostedtoolcache/node/24.14.0/x64/bin/qdrant-mcp-server"
+      ],
+      "enabled": true,
+      "environment": {
+        "QDRANT_URL": "http://localhost:6333",
+        "EMBEDDING_PROVIDER": "openai",
+        "OPENAI_API_KEY": "{env:LIGHTBRIDGE_API_KEY}",
+        "EMBEDDING_BASE_URL": "{env:LIGHTBRIDGE_BASE_URL}",
+        "EMBEDDING_MODEL": "text-embedding-3-small",
+        "CODE_ENABLE_AST": "true",
+        "CODE_CHUNK_SIZE": "2500"
+      }
+    }
+  }
+}

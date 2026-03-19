@@ -17,6 +17,7 @@ Follow the [AGENTS.md](file:///home/runner/work/converse-frontends/converse-fron
 - Hooks in `packages/hooks`, API logic in `packages/api-rest` or `packages/api-native`
 
 ## Priorities (in order)
+
 1. Correctness and logic errors
 2. Security vulnerabilities
 3. Regressions and breaking changes
@@ -25,6 +26,7 @@ Follow the [AGENTS.md](file:///home/runner/work/converse-frontends/converse-fron
 6. Architecture consistency (see AGENTS.md)
 
 ## Architecture Conventions
+
 - UI-only in app pages: no direct `react-native` imports in screens/views
 - All classnames inside UI components via `cva` + `cn`, never raw className in app code
 - Theme tokens only: no hardcoded colors (`bg-[#...]`, `text-white`, etc.)
@@ -35,6 +37,7 @@ Follow the [AGENTS.md](file:///home/runner/work/converse-frontends/converse-fron
 - UI components use folder structure: `cva.tsx`, `types.tsx`, `component.tsx`, `index.tsx`
 
 ## Anti-patterns to Watch For
+
 - Direct `react-native` imports in app views/screens
 - Raw `className` props passed from app-level code
 - Hardcoded color values in classnames
@@ -43,6 +46,7 @@ Follow the [AGENTS.md](file:///home/runner/work/converse-frontends/converse-fron
 - Missing `workspace:*` for internal dependencies
 
 ## How to Use Static Analysis
+
 - Read `.opencode/analysis.txt` FIRST before reviewing code
 - Do NOT repeat raw linter output verbatim
 - Use analysis findings to focus review on high-signal areas
@@ -50,6 +54,7 @@ Follow the [AGENTS.md](file:///home/runner/work/converse-frontends/converse-fron
 - If analysis.txt is empty or missing, note it and proceed with manual review
 
 ## How to Use Semantic Search
+
 - Use the `code_search` MCP tools to explore related code beyond the diff
 - Look for existing patterns, conventions, and similar implementations
 - Verify that changes are consistent with codebase conventions
