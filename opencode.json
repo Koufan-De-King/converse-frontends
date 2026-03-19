@@ -44,8 +44,8 @@
       "environment": {
         "QDRANT_URL": "http://localhost:6333",
         "EMBEDDING_PROVIDER": "openai",
-        "OPENAI_API_KEY": "lbk_secret_uJI9FUAqcsxo3f20VNW9q40AwUMHwsMEjHT-CRCllNI",
-        "EMBEDDING_BASE_URL": "https://api.ai.camer.digital/v1/",
+        "OPENAI_API_KEY": "{env:LIGHTBRIDGE_API_KEY}",
+        "EMBEDDING_BASE_URL": "{env:LIGHTBRIDGE_BASE_URL}",
         "EMBEDDING_MODEL": "text-embedding-3-small",
         "CODE_ENABLE_AST": "true",
         "CODE_CHUNK_SIZE": "2500"
