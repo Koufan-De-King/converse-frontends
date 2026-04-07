@@ -58,9 +58,9 @@ export function HomeView({
     percent: clampedPercent.toFixed(1),
   });
 
-  const summaryLabel = t('home.usageSummary', {
-    used: usedRequests.toLocaleString(),
-    total: totalRequests.toLocaleString(),
+  const summaryLabel = t('home.usageCostSummary', {
+    used: usedRequests.toFixed(2),
+    total: totalRequests.toFixed(2),
   });
 
   const quickActions = [
@@ -99,12 +99,6 @@ export function HomeView({
     servicesProp && servicesProp.length > 0
       ? servicesProp
       : [
-          {
-            key: 'production-gateway',
-            name: t('home.services.productionGateway'),
-            version: t('home.version', { version: '2.4.1' }),
-            status: 'unknown' as ServiceStatus,
-          },
           {
             key: 'analytics-engine',
             name: t('home.services.analyticsEngine'),
@@ -152,7 +146,7 @@ export function HomeView({
                 tone="surface"
                 rounded="full"
                 height="xs"
-                style={{ width: `${clampedPercent}%` }}
+                style={{ width: `${clampedPercent}%`, minWidth: clampedPercent > 0 ? 8 : 0 }}
               />
             </Div>
           </Stack>

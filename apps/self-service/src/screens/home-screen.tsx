@@ -92,10 +92,10 @@ export function HomeScreen() {
 
   const usageQueryParams = useMemo(
     () => ({
-      startTime: startOfToday,
-      bucket: '1 day' as const,
+      startTime: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+      bucket: '30 days' as const,
     }),
-    [startOfToday]
+    []
   );
 
   const { data: usageResponse } = useQueryUsage(usageQueryParams);
@@ -137,25 +137,6 @@ export function HomeScreen() {
     queryFn: async (): Promise<ServiceInfo[]> => {
       const results: ServiceInfo[] = [];
 
-      if (config.gatewayUrl) {
-        const url = config.gatewayUrl.endsWith('/')
-          ? `${config.gatewayUrl}v1/models`
-          : `${config.gatewayUrl}/v1/models`;
-
-        const status = await checkServiceHealth(url, {
-          headers: config.gatewayBearerToken
-            ? { Authorization: `Bearer ${config.gatewayBearerToken}` }
-            : undefined,
-        });
-
-        results.push({
-          key: 'production-gateway',
-          name: 'Production Gateway',
-          version: '2.4.1',
-          status,
-        });
-      }
-
       if (config.analyticsUrl) {
         const status = await checkServiceHealth(config.analyticsUrl, {
           noCors: true,
@@ -175,25 +156,27 @@ export function HomeScreen() {
     refetchOnWindowFocus: false,
   });
 
-  const { usedRequests, totalRequests, usagePercent } = useMemo(() => {
+  const { usedCost, totalBudget, usagePercent } = useMemo(() => {
     const points = usageResponse?.points ?? [];
-    const used = points.reduce((acc, item) => acc + (item.requests ?? 0), 0);
-    const total = project?.default_limits?.requests_per_day || 1000;
+    // total_cost is in microUSD
+    const microUsed = points.reduce((acc, item) => acc + (item.total_cost ?? 0), 0);
+    const used = microUsed / 1_000_000;
+    const total = 30; // $30 budget per user request
     const percent = total > 0 ? (used / total) * 100 : 0;
 
     return {
-      usedRequests: used,
-      totalRequests: total,
+      usedCost: used,
+      totalBudget: total,
       usagePercent: percent,
     };
-  }, [usageResponse, project]);
+  }, [usageResponse]);
 
   return (
     <HomeView
       userName={session.user?.name}
       usagePercent={usagePercent}
-      usedRequests={usedRequests}
-      totalRequests={totalRequests}
+      usedRequests={usedCost}
+      totalRequests={totalBudget}
       services={services}
       onNewToken={() => router.navigate('/api-keys/new')}
       onEndpoints={() => router.push('/api-keys')}
