@@ -9,7 +9,7 @@ info:
   license:
     name: MIT
     identifier: MIT
-  version: 0.6.6
+  version: 0.8.1
 paths:
   "/usage/v1/usage/query":
     post:
@@ -35,6 +35,26 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/UsageErrorResponse"
+  "/v1/otel/logs":
+    post:
+      tags:
+      - ingest
+      operationId: ingest_logs
+      requestBody:
+        content:
+          application/x-protobuf:
+            schema:
+              type: string
+        required: true
+      responses:
+        '202':
+          description: ''
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/IngestResponse"
+        '400':
+          description: ''
   "/v1/otel/metrics":
     post:
       tags:
@@ -179,6 +199,7 @@ components:
       - bucket_start
       - requests
       - usage_value
+      - total_cost
       - prompt_tokens
       - completion_tokens
       - total_tokens
@@ -215,6 +236,9 @@ components:
           type:
           - string
           - 'null'
+        total_cost:
+          type: number
+          format: double
         total_tokens:
           type: integer
           format: int64

@@ -17,12 +17,27 @@ export type ServiceInfo = {
   status: ServiceStatus;
 };
 
-async function checkServiceHealth(url: string): Promise<ServiceStatus> {
+async function checkServiceHealth(
+  url: string,
+  options?: { headers?: Record<string, string>; noCors?: boolean }
+): Promise<ServiceStatus> {
+  if (!url || !url.startsWith('http')) {
+    return 'unknown';
+  }
+
   try {
     const response = await fetch(url, {
       method: 'GET',
       credentials: 'omit',
+      headers: options?.headers,
+      mode: options?.noCors ? 'no-cors' : 'cors',
     });
+
+    if (options?.noCors) {
+      // In no-cors mode, we can't read the status, but reachability is enough.
+      return 'healthy';
+    }
+
     return response.ok ? 'healthy' : 'unhealthy';
   } catch {
     return 'unhealthy';
@@ -77,10 +92,10 @@ export function HomeScreen() {
 
   const usageQueryParams = useMemo(
     () => ({
-      startTime: startOfToday,
-      bucket: '1 day' as const,
+      startTime: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+      bucket: '30 days' as const,
     }),
-    [startOfToday]
+    []
   );
 
   const { data: usageResponse } = useQueryUsage(usageQueryParams);
@@ -122,18 +137,10 @@ export function HomeScreen() {
     queryFn: async (): Promise<ServiceInfo[]> => {
       const results: ServiceInfo[] = [];
 
-      if (config.gatewayUrl) {
-        const status = await checkServiceHealth(config.gatewayUrl);
-        results.push({
-          key: 'production-gateway',
-          name: 'Production Gateway',
-          version: '2.4.1',
-          status,
-        });
-      }
-
       if (config.analyticsUrl) {
-        const status = await checkServiceHealth(config.analyticsUrl);
+        const status = await checkServiceHealth(config.analyticsUrl, {
+          noCors: true,
+        });
         results.push({
           key: 'analytics-engine',
           name: 'Analytics Engine',
@@ -149,25 +156,27 @@ export function HomeScreen() {
     refetchOnWindowFocus: false,
   });
 
-  const { usedRequests, totalRequests, usagePercent } = useMemo(() => {
+  const { usedCost, totalBudget, usagePercent } = useMemo(() => {
     const points = usageResponse?.points ?? [];
-    const used = points.reduce((acc, item) => acc + (item.requests ?? 0), 0);
-    const total = project?.default_limits?.requests_per_day || 1000;
+    // total_cost is in microUSD
+    const microUsed = points.reduce((acc, item) => acc + (item.total_cost ?? 0), 0);
+    const used = microUsed / 1_000_000;
+    const total = 30; // $30 budget per user request
     const percent = total > 0 ? (used / total) * 100 : 0;
 
     return {
-      usedRequests: used,
-      totalRequests: total,
+      usedCost: used,
+      totalBudget: total,
       usagePercent: percent,
     };
-  }, [usageResponse, project]);
+  }, [usageResponse]);
 
   return (
     <HomeView
       userName={session.user?.name}
       usagePercent={usagePercent}
-      usedRequests={usedRequests}
-      totalRequests={totalRequests}
+      usedRequests={usedCost}
+      totalRequests={totalBudget}
       services={services}
       onNewToken={() => router.navigate('/api-keys/new')}
       onEndpoints={() => router.push('/api-keys')}

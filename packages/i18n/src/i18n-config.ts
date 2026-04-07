@@ -100,6 +100,13 @@ const resources = {
         tokens: '{{formatted}} tokens',
         requests: '{{formatted}} requests',
         comingSoon: 'Coming Soon',
+        totalCost: 'Total Cost',
+        totalRequests: 'Total Requests',
+        totalTokens: 'Total Tokens',
+        costByModel: 'Cost by Model',
+        dailyUsage: 'Daily Usage Tracking',
+        noData: 'No usage data available for this period.',
+        loading: 'Loading usage data...'
       },
       help: {
         title: 'Help',
@@ -127,6 +134,7 @@ const resources = {
         currentUsage: 'Current API Usage',
         usagePercent: '{{percent}}%',
         usageSummary: '{{used}} of {{total}} monthly requests',
+        usageCostSummary: '${{used}} of ${{total}} monthly budget',
         quickActions: {
           title: 'Quick Actions',
           newToken: 'New Token',
